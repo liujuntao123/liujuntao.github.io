@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang=zh-CN>
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+  
+    <link rel="icon" href="/favicon.ico">
+  
+    
+  <title>最简单易懂的node爬虫教程 | 刘君涛的博客</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/lib/jquery.fancybox.min.css">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+  <header>
+  <div class="header-container">
+    <a class='logo' href="/">
+      <span>刘君涛的博客</span>
+    </a>
+    <ul class="right-header">
+      
+        <li class="nav-item">
+          
+            <a href="/" class="item-link">首页</a>
+          
+        </li>
+      
+        <li class="nav-item">
+          
+            <a href="/about" class="item-link">关于</a>
+          
+        </li>
+      
+        <li class="nav-item">
+          
+            <a href="/archives" class="item-link">归档</a>
+          
+        </li>
+      
+        <li class="nav-item">
+          
+            <a href="/tags" class="item-link">标签</a>
+          
+        </li>
+      
+    </ul>
+  </div>
+</header>
+
+  <main id='post'>
+  <div class="content">
+    <article>
+        <section class="content markdown-body">
+          <h1>最简单易懂的node爬虫教程</h1>
+          <div class='post-meta'>
+            <i class="fa fa-calendar" aria-hidden="true"></i> <time>2018年05月17日</time>
+            
+              | <i class="fa fa-folder-open-o" aria-hidden="true"></i> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/nodeJS/">nodeJS</a>
+  </div>
+
+
+
+            
+            
+              | 
+                  <i class="fa fa-tag" aria-hidden="true"></i>
+                
+               
+  <a href="/tags/#nodeJS 爬虫" class='tag'>nodeJS 爬虫</a>
+
+
+            
+          </div>
+          <p>最近了解了一下node实现网络爬虫的知识。于是我借鉴吸收之后，决定用request工具和cheerio，结合比较新的async异步语法，写了个浅显易懂的<a href="https://github.com/liujuntao123/crawler-demo" target="_blank" rel="noopener">node-demo</a>，供大家一起学习交流。<br>建议阅读本篇文章的同时，把这个demo克隆下来，更易于理解本文。<br>其实用node实现爬虫的基本原理很简单，就是通过request异步请求网页文件，然后再用cheerio解析这个文件的内容，然后根据自己所需爬取内容，最后借助node将爬取内容的结果封装成自己需要的形式，如json格式。</p>
+<h3 id="介绍一下request和cheerio这两个工具和async语法。"><a href="#介绍一下request和cheerio这两个工具和async语法。" class="headerlink" title="介绍一下request和cheerio这两个工具和async语法。"></a>介绍一下request和cheerio这两个工具和async语法。</h3><p>request是当前最简单的http请求工具，只需要简单的语句和配置就可以发送一个http请求，它的功能很强大，基本可以满足你所有的http功能的需求。这里使用的是bluebird开发的http-promise工具，它和request的区别是，使用request请求的响应结果是在它的回调函数里面，而http-promise的响应结果是以一个promise对象返回，这有利于async语句的书写，其他的，两者一样。<br>cheerio被称为是node端的jQuery，它可以把html文档解析成dom树的形式，然后使用类似于jQuery的元素选择器语法来选取元素。具体语法可以参见我的代码。<br>async是最新的也被认为是终极的js异步编程方式，如果对它还不熟悉，可以移步我的另一篇文章<a href="http://www.jianshu.com/p/fb1a86555b6c" target="_blank" rel="noopener">JS异步编程学习笔记</a>熟悉一下async。</p>
+<h3 id="用node写一个网络爬虫"><a href="#用node写一个网络爬虫" class="headerlink" title="用node写一个网络爬虫"></a>用node写一个网络爬虫</h3><p>下面是爬取知乎头条的步骤。首先，为了能在node里用上最新的es语法，使用严格模式：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span></span><br></pre></td></tr></table></figure></p>
+<p>然后引入所需依赖，设定目标URI:<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> request = <span class="built_in">require</span>(<span class="string">'request-promise'</span>)</span><br><span class="line"><span class="keyword">let</span> $ = <span class="built_in">require</span>(<span class="string">'cheerio'</span>)</span><br><span class="line"><span class="keyword">let</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>)</span><br><span class="line"><span class="keyword">let</span> app = express()</span><br><span class="line"><span class="keyword">const</span> URI = <span class="string">'https://daily.zhihu.com/'</span></span><br></pre></td></tr></table></figure></p>
+<p>接下来开始写第一个接口，形式为直接访问’/‘:<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">app.get(<span class="string">'/'</span>, <span class="keyword">async</span> (req, res) =&gt; &#123;</span><br><span class="line">  <span class="keyword">let</span> result = <span class="keyword">await</span> request(URI)<span class="comment">//异步请求网页</span></span><br><span class="line">  <span class="keyword">let</span> data = []</span><br><span class="line">  <span class="keyword">let</span> elements = $(<span class="string">'a'</span>, <span class="string">'.main-content .wrap .box'</span>, result)<span class="comment">//解析出网页里的a元素</span></span><br><span class="line">  elements.map(<span class="function">(<span class="params">i, ele</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> json = &#123;&#125;</span><br><span class="line">    <span class="keyword">let</span> $ele = $(ele)</span><br><span class="line">    json.url = $ele.attr(<span class="string">'href'</span>)<span class="comment">//获取a元素的地址链接</span></span><br><span class="line">    json.title = $ele.children().text()<span class="comment">//获取标题</span></span><br><span class="line">    data.push(json)</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="built_in">console</span>.log(data)</span><br><span class="line">  res.send(data)<span class="comment">//把data数据返回给前台</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>再写一个获取文章详情的接口，访问路径为’/detail?path=关键字’:<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">app.get(<span class="string">'/detail'</span>, <span class="keyword">async</span> (req, res) =&gt; &#123;</span><br><span class="line">  <span class="keyword">let</span> result = <span class="keyword">await</span> request(URI + req.query.path)</span><br><span class="line">  <span class="keyword">let</span> data = &#123;&#125;</span><br><span class="line">  <span class="keyword">let</span> element = $(<span class="string">'.content-inner .answer'</span>, result)<span class="comment">//解析网页的指定元素</span></span><br><span class="line">  data.avatar_url = $(<span class="string">'.meta img.avatar'</span>, element).attr(<span class="string">'src'</span>)<span class="comment">//获取头像url</span></span><br><span class="line">  data.author = $(<span class="string">'.meta .author'</span>, element).text()<span class="comment">//获取作者</span></span><br><span class="line">  data.bio = $(<span class="string">'.meta .bio'</span>, element).text()<span class="comment">//获取作者签名</span></span><br><span class="line">  data.content = $(<span class="string">'.content'</span>, element).text()<span class="comment">//获取文章内容</span></span><br><span class="line">  res.send(data)<span class="comment">//返回data给前台</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>最后启动服务：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">app.listen(<span class="number">8001</span>, () =&gt; &#123;<span class="comment">//启动一个8001端口的server服务</span></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'Listening on port 8001'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>项目启动后，访问<a href="http://localhost:8001即可看到接口返回的数据" target="_blank" rel="noopener">http://localhost:8001即可看到接口返回的数据</a></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/4050018-a9fc7a4998f626e9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="image.png"></p>
+
+        </section>
+    </article>
+    
+        <!-- disqus 评论框 start -->
+        <div class="comment">
+            <div id="disqus_thread" class="disqus-thread">
+              <i>加载评论框需要翻墙</i>
+            </div>
+        </div>
+        <!-- disqus 评论框 end -->
+    
+    
+        <!-- livere 评论框 start -->
+        <div class="comment">
+            <div id="lv-container" data-id="city" data-uid="your_livere_uid"></div>
+        </div>
+        <!-- livere 评论框 end -->
+        
+  </div>
+  <aside>
+    
+    <div class="toc-container">
+        <h1>目录</h1>
+        <div class="content">
+            <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#介绍一下request和cheerio这两个工具和async语法。"><span class="toc-number">1.</span> <span class="toc-text">介绍一下request和cheerio这两个工具和async语法。</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#用node写一个网络爬虫"><span class="toc-number">2.</span> <span class="toc-text">用node写一个网络爬虫</span></a></li></ol>
+        </div>
+    </div>
+    
+  </aside>
+</main>
+
+<!-- disqus 公共JS代码 -->
+<script type="text/javascript">
+  /* * * CONFIGURATION VARIABLES * * */
+  var disqus_shortname = "your_disqus_shortname";
+  var disqus_identifier = "http://yoursite.com/2018/05/17/最简单易懂的node爬虫教程/";
+  var disqus_url = "http://yoursite.com/2018/05/17/最简单易懂的node爬虫教程/";
+
+  isAgent(getDisqus)
+
+  // determine user agent in China
+  function isAgent(cb) {
+    var url = '//graph.facebook.com/feed?callback=h';
+    var xhr = new XMLHttpRequest();
+    var called = false;
+    xhr.open('GET', url);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+      called = true;
+      cb(true);
+      }
+    };
+    xhr.send();
+    // timeout 1s, this facebook API is very fast.
+    setTimeout(function() {
+      if (!called) {
+      xhr.abort();
+      cb(false)
+      }
+    }, 1000);
+  }
+
+  function getDisqus(isAgent) {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; 
+    dsq.async = true
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq)
+  }
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+<script type="text/javascript">
+  (function(d, s) {
+      var j, e = d.getElementsByTagName(s)[0];
+
+      if (typeof LivereTower === 'function') { return; }
+
+      j = d.createElement(s);
+      j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+      j.async = true;
+
+      e.parentNode.insertBefore(j, e);
+  })(document, 'script');
+</script>
+
+
+  <footer>
+  <div class="copyright">
+    <div>
+      &copy; 2018 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a>&nbsp
+    </div>
+    <div>
+      Theme by <a href="https://github.com/lewis-geek/hexo-theme-Aath" target="_blank">Aath</a>
+    </div>
+  </div>
+</footer>
+
+
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="/lib/in-view.min.js"></script>
+<script src="/lib/lodash.min.js"></script>
+<script>
+  var isDown = true
+  var oldY = 0
+  inView.offset(50)
+
+  document.body.addEventListener('touchstart', function(){});
+  
+  window.addEventListener('scroll', _.throttle(e => {
+    var currentY = window.scrollY
+    if((oldY - currentY) < 0) {
+      isDown = true
+    } else {
+      isDown = false
+    }
+    oldY = currentY
+  }, 250))
+
+  $("article img").each(function() {
+      var strA = "<a data-fancybox='gallery' href='" + this.src + "'></a>";
+      $(this).wrapAll(strA);
+  });
+
+  $('.toc-link').each(function() {
+      var href = $(this).attr("href");
+      
+      inView(href).on('exit', () => {
+        if (isDown) {
+          handleActive(href)
+        }
+      })
+
+      inView(href).on('enter', () => {
+        if (!isDown) {
+          handleActive(href)
+        }
+      })
+
+      this.onclick = function(e) {
+        var pos = $(href).offset().top - 10;
+        $("html,body").animate({scrollTop: pos}, 300);
+        setTimeout(() => {
+          handleActive(href)
+        }, 350)
+        return false
+      }
+  })
+
+  function handleActive(href) {
+    document.querySelectorAll('.toc-link').forEach(elm => {
+      elm.classList.remove('active')
+    })
+    document.querySelector(".toc [href='"+ href +"']").classList.add('active')
+  }
+</script>
+<script src="/lib/jquery.fancybox.min.js"></script>
+
+
+</body>
+</html>
