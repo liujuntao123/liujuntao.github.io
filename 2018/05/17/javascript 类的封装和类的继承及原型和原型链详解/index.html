@@ -1,90 +1,328 @@
 <!DOCTYPE html>
-<html lang=zh-CN>
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="description" content="">
-  <meta name="keywords" content="">
+
+
+
   
-    <link rel="icon" href="/favicon.ico">
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
-    
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ES6,继承,原型,原型链," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文主要讲ES5、ES6中类的定义、封装和类的继承，以及一些注意事项，文中除了参考引用一些资料外，也加入了很多自己的理解，如有错误，欢迎读者纠正。 javascript 类的定义ES5 中的类在 ES5 中，其实是没有类的概念的，原因是因为 js 的作者当初在设计这门语言的时候认为，一旦像 C++和 Java 一样引入了类，js 就是一种完整的面向对象编程语言了，这好像有点太正式了，而其增加了初学">
+<meta name="keywords" content="ES6,继承,原型,原型链">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript 类的封装和类的继承及原型和原型链详解">
+<meta property="og:url" content="http://yoursite.com/2018/05/17/javascript 类的封装和类的继承及原型和原型链详解/index.html">
+<meta property="og:site_name" content="刘君涛的博客">
+<meta property="og:description" content="本文主要讲ES5、ES6中类的定义、封装和类的继承，以及一些注意事项，文中除了参考引用一些资料外，也加入了很多自己的理解，如有错误，欢迎读者纠正。 javascript 类的定义ES5 中的类在 ES5 中，其实是没有类的概念的，原因是因为 js 的作者当初在设计这门语言的时候认为，一旦像 C++和 Java 一样引入了类，js 就是一种完整的面向对象编程语言了，这好像有点太正式了，而其增加了初学">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-05-17T13:00:24.099Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="javascript 类的封装和类的继承及原型和原型链详解">
+<meta name="twitter:description" content="本文主要讲ES5、ES6中类的定义、封装和类的继承，以及一些注意事项，文中除了参考引用一些资料外，也加入了很多自己的理解，如有错误，欢迎读者纠正。 javascript 类的定义ES5 中的类在 ES5 中，其实是没有类的概念的，原因是因为 js 的作者当初在设计这门语言的时候认为，一旦像 C++和 Java 一样引入了类，js 就是一种完整的面向对象编程语言了，这好像有点太正式了，而其增加了初学">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/17/javascript 类的封装和类的继承及原型和原型链详解/"/>
+
+
+
+
+
   <title>javascript 类的封装和类的继承及原型和原型链详解 | 刘君涛的博客</title>
-  <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="/lib/jquery.fancybox.min.css">
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+
+
+
+
+
+
+
+
 </head>
 
-<body>
-  <header>
-  <div class="header-container">
-    <a class='logo' href="/">
-      <span>刘君涛的博客</span>
-    </a>
-    <ul class="right-header">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">刘君涛的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
       
-        <li class="nav-item">
-          
-            <a href="/" class="item-link">首页</a>
-          
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
         </li>
       
-        <li class="nav-item">
-          
-            <a href="/about" class="item-link">关于</a>
-          
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
         </li>
       
-        <li class="nav-item">
-          
-            <a href="/archives" class="item-link">归档</a>
-          
-        </li>
-      
-        <li class="nav-item">
-          
-            <a href="/tags" class="item-link">标签</a>
-          
-        </li>
+
       
     </ul>
-  </div>
-</header>
+  
 
-  <main id='post'>
-  <div class="content">
-    <article>
-        <section class="content markdown-body">
-          <h1>javascript 类的封装和类的继承及原型和原型链详解</h1>
-          <div class='post-meta'>
-            <i class="fa fa-calendar" aria-hidden="true"></i> <time>2018年05月17日</time>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
             
-              | <i class="fa fa-folder-open-o" aria-hidden="true"></i> 
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/深入JS/">深入JS</a>
-  </div>
 
+  <div id="posts" class="posts-expand">
+    
 
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/17/javascript 类的封装和类的继承及原型和原型链详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘君涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/22583601?s=400&u=3f2a631260e5d1fc1ccc50a902ee8919290bf17f&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="刘君涛的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">javascript 类的封装和类的继承及原型和原型链详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-17T09:52:19+08:00">
+                2018-05-17
+              </time>
+            
 
             
+
             
-              | 
-                  <i class="fa fa-tags" aria-hidden="true"></i>
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深入JS/" itemprop="url" rel="index">
+                    <span itemprop="name">深入JS</span>
+                  </a>
+                </span>
+
                 
-               
-  <a href="/tags/#ES6" class='tag'>ES6</a>
+                
+              
+            </span>
+          
 
-  <a href="/tags/#继承" class='tag'>继承</a>
-
-  <a href="/tags/#原型" class='tag'>原型</a>
-
-  <a href="/tags/#原型链" class='tag'>原型链</a>
-
-
+          
             
-          </div>
-          <p>本文主要讲ES5、ES6中类的定义、封装和类的继承，以及一些注意事项，文中除了参考引用一些资料外，也加入了很多自己的理解，如有错误，欢迎读者纠正。</p>
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文主要讲ES5、ES6中类的定义、封装和类的继承，以及一些注意事项，文中除了参考引用一些资料外，也加入了很多自己的理解，如有错误，欢迎读者纠正。</p>
 <h2 id="javascript-类的定义"><a href="#javascript-类的定义" class="headerlink" title="javascript 类的定义"></a>javascript 类的定义</h2><h3 id="ES5-中的类"><a href="#ES5-中的类" class="headerlink" title="ES5 中的类"></a>ES5 中的类</h3><p>在 ES5 中，其实是没有类的概念的，原因是因为 js 的作者当初在设计这门语言的时候认为，一旦像 C++和 Java 一样引入了类，js 就是一种完整的面向对象编程语言了，这好像有点太正式了，而其增加了初学者的入门难度。他当时认为，没必要将 js 设计得很复杂，这种语言只要能够完成一些简单操作就够了，比如判断用户有没有填写表单。因此，有了一些模拟定义类的方法出现。</p>
 <h4 id="构造函数法"><a href="#构造函数法" class="headerlink" title="构造函数法"></a>构造函数法</h4><p>这个方法相信稍微有些 js 基础的人都能知道。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">People</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.name = name</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">var</span> jack = <span class="keyword">new</span> People(<span class="string">'jack'</span>)</span><br><span class="line">People.prototype.constructor === People <span class="comment">// true</span></span><br><span class="line">jack.constructor === People <span class="comment">// true</span></span><br><span class="line">jack.__proto__ === People.prototype <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
@@ -125,96 +363,410 @@
 <h3 id="实例方法-属性"><a href="#实例方法-属性" class="headerlink" title="实例方法/属性"></a>实例方法/属性</h3><p>就是constructor函数里this后面的一些赋值的方法和属性，是没有实例自己私有的。</p>
 <h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p><a href="http://www.ruanyifeng.com/blog/2011/06/designing_ideas_of_inheritance_mechanism_in_javascript.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2011/06/designing_ideas_of_inheritance_mechanism_in_javascript.html</a><br><a href="http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_encapsulation.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_encapsulation.html</a><br><a href="http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_inheritance.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_inheritance.html</a><br><a href="http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_inheritance_continued.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2010/05/object-oriented_javascript_inheritance_continued.html</a><br><a href="http://www.ruanyifeng.com/blog/2012/07/three_ways_to_define_a_javascript_class.html" target="_blank" rel="noopener">http://www.ruanyifeng.com/blog/2012/07/three_ways_to_define_a_javascript_class.html</a><br><a href="http://es6.ruanyifeng.com/#docs/class" target="_blank" rel="noopener">http://es6.ruanyifeng.com/#docs/class</a><br><a href="http://es6.ruanyifeng.com/#docs/class-extends" target="_blank" rel="noopener">http://es6.ruanyifeng.com/#docs/class-extends</a><br><a href="https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global_objects/object" target="_blank" rel="noopener">https://developer.mozilla.org/zh-cn/docs/web/javascript/reference/global_objects/object</a><br><a href="https://stackoverflow.com/questions/41189190/how-and-why-would-i-write-a-class-that-extends-null" target="_blank" rel="noopener">https://stackoverflow.com/questions/41189190/how-and-why-would-i-write-a-class-that-extends-null</a><br><a href="https://github.com/mqyqingfeng/Blog/issues/2" target="_blank" rel="noopener">https://github.com/mqyqingfeng/Blog/issues/2</a><br><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain" target="_blank" rel="noopener">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain</a></p>
 
-        </section>
-    </article>
-    
-        
-  </div>
-  <aside>
-    
-    <div class="toc-container">
-        <h1>目录</h1>
-        <div class="content">
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#javascript-类的定义"><span class="toc-number">1.</span> <span class="toc-text">javascript 类的定义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ES5-中的类"><span class="toc-number">1.1.</span> <span class="toc-text">ES5 中的类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#构造函数法"><span class="toc-number">1.1.1.</span> <span class="toc-text">构造函数法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Object-create-法"><span class="toc-number">1.1.2.</span> <span class="toc-text">Object.create()法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#极简主义法"><span class="toc-number">1.1.3.</span> <span class="toc-text">极简主义法</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ES6-中的类"><span class="toc-number">1.2.</span> <span class="toc-text">ES6 中的类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#new-targer-属性"><span class="toc-number">1.2.1.</span> <span class="toc-text">new.targer 属性</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#javascript-类的继承"><span class="toc-number">2.</span> <span class="toc-text">javascript 类的继承</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ES5-中类的继承"><span class="toc-number">2.1.</span> <span class="toc-text">ES5 中类的继承</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#构造函数绑定"><span class="toc-number">2.1.1.</span> <span class="toc-text">构造函数绑定</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#继承-prototype"><span class="toc-number">2.1.2.</span> <span class="toc-text">继承 prototype</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ES6-中类的继承"><span class="toc-number">2.2.</span> <span class="toc-text">ES6 中类的继承</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#javascript-原型和原型链，以及prototype和proto"><span class="toc-number">3.</span> <span class="toc-text">javascript 原型和原型链，以及prototype和proto</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是原型？"><span class="toc-number">3.1.</span> <span class="toc-text">什么是原型？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#什么是原型链？"><span class="toc-number">3.2.</span> <span class="toc-text">什么是原型链？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Object-setPrototypeOf-obj-prototype"><span class="toc-number">3.2.1.</span> <span class="toc-text">Object.setPrototypeOf(obj,prototype)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#prototypeObj-prototype-isPrototypeOf-object"><span class="toc-number">3.2.2.</span> <span class="toc-text">prototypeObj.prototype.isPrototypeOf(object)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#私有方法-属性、静态方法-属性、公共方法-属性、实例方法-属性"><span class="toc-number">4.</span> <span class="toc-text">私有方法/属性、静态方法/属性、公共方法/属性、实例方法/属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#私有方法-属性"><span class="toc-number">4.1.</span> <span class="toc-text">私有方法/属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#静态方法-属性"><span class="toc-number">4.2.</span> <span class="toc-text">静态方法/属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#公共方法-属性"><span class="toc-number">4.3.</span> <span class="toc-text">公共方法/属性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实例方法-属性"><span class="toc-number">4.4.</span> <span class="toc-text">实例方法/属性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-number">5.</span> <span class="toc-text">参考文档</span></a></li></ol>
-        </div>
-    </div>
-    
-  </aside>
-</main>
-
-
-
-  <footer>
-  <div class="copyright">
-    <div>
-      &copy; 2018 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a>&nbsp
-    </div>
-    <div>
-      Theme by <a href="https://github.com/lewis-geek/hexo-theme-Aath" target="_blank">Aath</a>
-    </div>
-  </div>
-</footer>
-
-
-<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
-<script src="/lib/in-view.min.js"></script>
-<script src="/lib/lodash.min.js"></script>
-<script>
-  var isDown = true
-  var oldY = 0
-  inView.offset(50)
-
-  document.body.addEventListener('touchstart', function(){});
-  
-  window.addEventListener('scroll', _.throttle(e => {
-    var currentY = window.scrollY
-    if((oldY - currentY) < 0) {
-      isDown = true
-    } else {
-      isDown = false
-    }
-    oldY = currentY
-  }, 250))
-
-  $("article img").each(function() {
-      var strA = "<a data-fancybox='gallery' href='" + this.src + "'></a>";
-      $(this).wrapAll(strA);
-  });
-
-  $('.toc-link').each(function() {
-      var href = $(this).attr("href");
       
-      inView(href).on('exit', () => {
-        if (isDown) {
-          handleActive(href)
-        }
-      })
+    </div>
+    
+    
+    
 
-      inView(href).on('enter', () => {
-        if (!isDown) {
-          handleActive(href)
-        }
-      })
+    
 
-      this.onclick = function(e) {
-        var pos = $(href).offset().top - 10;
-        $("html,body").animate({scrollTop: pos}, 300);
-        setTimeout(() => {
-          handleActive(href)
-        }, 350)
-        return false
-      }
-  })
+    
 
-  function handleActive(href) {
-    document.querySelectorAll('.toc-link').forEach(elm => {
-      elm.classList.remove('active')
-    })
-    document.querySelector(".toc [href='"+ href +"']").classList.add('active')
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ES6/" rel="tag"># ES6</a>
+          
+            <a href="/tags/继承/" rel="tag"># 继承</a>
+          
+            <a href="/tags/原型/" rel="tag"># 原型</a>
+          
+            <a href="/tags/原型链/" rel="tag"># 原型链</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/17/趣味探索promise的秘密/" rel="prev" title="趣味探索promise的秘密">
+                趣味探索promise的秘密 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/22583601?s=400&u=3f2a631260e5d1fc1ccc50a902ee8919290bf17f&v=4"
+                alt="刘君涛" />
+            
+              <p class="site-author-name" itemprop="name">刘君涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/liujuntao123/liujuntao123.github.io/tree/master" title="github" target="_blank">github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#javascript-类的定义"><span class="nav-number">1.</span> <span class="nav-text">javascript 类的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ES5-中的类"><span class="nav-number">1.1.</span> <span class="nav-text">ES5 中的类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#构造函数法"><span class="nav-number">1.1.1.</span> <span class="nav-text">构造函数法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Object-create-法"><span class="nav-number">1.1.2.</span> <span class="nav-text">Object.create()法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#极简主义法"><span class="nav-number">1.1.3.</span> <span class="nav-text">极简主义法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ES6-中的类"><span class="nav-number">1.2.</span> <span class="nav-text">ES6 中的类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#new-targer-属性"><span class="nav-number">1.2.1.</span> <span class="nav-text">new.targer 属性</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#javascript-类的继承"><span class="nav-number">2.</span> <span class="nav-text">javascript 类的继承</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ES5-中类的继承"><span class="nav-number">2.1.</span> <span class="nav-text">ES5 中类的继承</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#构造函数绑定"><span class="nav-number">2.1.1.</span> <span class="nav-text">构造函数绑定</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#继承-prototype"><span class="nav-number">2.1.2.</span> <span class="nav-text">继承 prototype</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ES6-中类的继承"><span class="nav-number">2.2.</span> <span class="nav-text">ES6 中类的继承</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#javascript-原型和原型链，以及prototype和proto"><span class="nav-number">3.</span> <span class="nav-text">javascript 原型和原型链，以及prototype和proto</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是原型？"><span class="nav-number">3.1.</span> <span class="nav-text">什么是原型？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是原型链？"><span class="nav-number">3.2.</span> <span class="nav-text">什么是原型链？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Object-setPrototypeOf-obj-prototype"><span class="nav-number">3.2.1.</span> <span class="nav-text">Object.setPrototypeOf(obj,prototype)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#prototypeObj-prototype-isPrototypeOf-object"><span class="nav-number">3.2.2.</span> <span class="nav-text">prototypeObj.prototype.isPrototypeOf(object)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#私有方法-属性、静态方法-属性、公共方法-属性、实例方法-属性"><span class="nav-number">4.</span> <span class="nav-text">私有方法/属性、静态方法/属性、公共方法/属性、实例方法/属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#私有方法-属性"><span class="nav-number">4.1.</span> <span class="nav-text">私有方法/属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态方法-属性"><span class="nav-number">4.2.</span> <span class="nav-text">静态方法/属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#公共方法-属性"><span class="nav-number">4.3.</span> <span class="nav-text">公共方法/属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例方法-属性"><span class="nav-number">4.4.</span> <span class="nav-text">实例方法/属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">5.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘君涛</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
   }
 </script>
-<script src="/lib/jquery.fancybox.min.js"></script>
 
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
 
 </body>
 </html>

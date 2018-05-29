@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="HTTP,缓存," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="通过网络获取内容既缓慢，成本又高：大的响应需要在客户端和服务器之间进行多次往返通信，这拖延了浏览器可以使用和处理内容的时间，同时也增加了访问者的数据成本。因此，缓存和重用以前获取的资源的能力成为优化性能很关键的一个方面。 与缓存相关的HTTP头部字段http1.0时期的缓存方案   头部名称 说明     Pragma 控制缓存行为，如果设置为no-cache，表示禁用缓存。和http1.1中的C">
+<meta name="keywords" content="HTTP,缓存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP缓存技术详解">
+<meta property="og:url" content="http://yoursite.com/2018/05/21/HTTP缓存技术详解/index.html">
+<meta property="og:site_name" content="刘君涛的博客">
+<meta property="og:description" content="通过网络获取内容既缓慢，成本又高：大的响应需要在客户端和服务器之间进行多次往返通信，这拖延了浏览器可以使用和处理内容的时间，同时也增加了访问者的数据成本。因此，缓存和重用以前获取的资源的能力成为优化性能很关键的一个方面。 与缓存相关的HTTP头部字段http1.0时期的缓存方案   头部名称 说明     Pragma 控制缓存行为，如果设置为no-cache，表示禁用缓存。和http1.1中的C">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4050018-2da2091e6db1770d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4050018-76363a70319fe522.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2018-05-29T12:54:42.441Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP缓存技术详解">
+<meta name="twitter:description" content="通过网络获取内容既缓慢，成本又高：大的响应需要在客户端和服务器之间进行多次往返通信，这拖延了浏览器可以使用和处理内容的时间，同时也增加了访问者的数据成本。因此，缓存和重用以前获取的资源的能力成为优化性能很关键的一个方面。 与缓存相关的HTTP头部字段http1.0时期的缓存方案   头部名称 说明     Pragma 控制缓存行为，如果设置为no-cache，表示禁用缓存。和http1.1中的C">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/4050018-2da2091e6db1770d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/05/21/HTTP缓存技术详解/"/>
+
+
+
+
+
+  <title>HTTP缓存技术详解 | 刘君涛的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">刘君涛的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/21/HTTP缓存技术详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="刘君涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/22583601?s=400&u=3f2a631260e5d1fc1ccc50a902ee8919290bf17f&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="刘君涛的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP缓存技术详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-21T14:20:06+08:00">
+                2018-05-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深入http/" itemprop="url" rel="index">
+                    <span itemprop="name">深入http</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>通过网络获取内容既缓慢，成本又高：大的响应需要在客户端和服务器之间进行多次往返通信，这拖延了浏览器可以使用和处理内容的时间，同时也增加了访问者的数据成本。因此，缓存和重用以前获取的资源的能力成为优化性能很关键的一个方面。</p>
+<h2 id="与缓存相关的HTTP头部字段"><a href="#与缓存相关的HTTP头部字段" class="headerlink" title="与缓存相关的HTTP头部字段"></a>与缓存相关的HTTP头部字段</h2><h3 id="http1-0时期的缓存方案"><a href="#http1-0时期的缓存方案" class="headerlink" title="http1.0时期的缓存方案"></a>http1.0时期的缓存方案</h3><table>
+<thead>
+<tr>
+<th>头部名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pragma</td>
+<td>控制缓存行为，如果设置为no-cache，表示禁用缓存。和http1.1中的Cache-Control头部功能相似</td>
+</tr>
+<tr>
+<td>Expires</td>
+<td>过期时间，用的是服务器的时间，如果客户端和服务器时间不一致，则会存在缓存时间误差。http1.1可以用Cache-Control来实现相似的功能。</td>
+</tr>
+</tbody>
+</table>
+<p>如果使用了Pragma: ‘no-cache’的话，再设置Expires或者Cache-Control，就没有用了，说明Pragma的权值比后两者高。</p>
+<p>如果设置了Expires之后，客户端在需要请求数据的时候，首先会对比当前系统时间和这个Expires时间，如果没有过那个时间，则直接读取本地磁盘中的缓存数据，不发送请求。</p>
+<h3 id="http1-1的缓存方案"><a href="#http1-1的缓存方案" class="headerlink" title="http1.1的缓存方案"></a>http1.1的缓存方案</h3><h4 id="通用头部字段，即请求和响应都可以包含"><a href="#通用头部字段，即请求和响应都可以包含" class="headerlink" title="通用头部字段，即请求和响应都可以包含"></a>通用头部字段，即请求和响应都可以包含</h4><table>
+<thead>
+<tr>
+<th>头部名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cache-Control</td>
+<td>控制缓存行为</td>
+</tr>
+<tr>
+<td>Pragma</td>
+<td>http1.0的字段，作用和Cache-Control大体相同</td>
+</tr>
+</tbody>
+</table>
+<p>### </p>
+<ul>
+<li>Cache-Control作为请求头部</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>no-cache</td>
+<td>无</td>
+<td>强制向源服务器再次验证</td>
+</tr>
+<tr>
+<td>no-store</td>
+<td>无</td>
+<td>不缓存请求或相应的任何内容</td>
+</tr>
+<tr>
+<td>max-age=[秒]</td>
+<td>必需</td>
+<td>相应的最大Age值</td>
+</tr>
+<tr>
+<td>max-stale=(=[秒])</td>
+<td>可省略</td>
+<td>接收已过期的响应</td>
+</tr>
+<tr>
+<td>min-fresh=[秒]</td>
+<td>必需</td>
+<td>期望在指定时间内的响应仍有效</td>
+</tr>
+<tr>
+<td>no-transform</td>
+<td>无</td>
+<td>代理不可更改媒体类型</td>
+</tr>
+<tr>
+<td>only-if-cached</td>
+<td>无</td>
+<td>从缓存获取资源</td>
+</tr>
+<tr>
+<td>cache-extension</td>
+<td>-</td>
+<td>新指令标记（token）</td>
+</tr>
+</tbody>
+</table>
+<p><strong><em>Cache-Control: no-cache</em></strong></p>
+<p>使用 no-cache 指令的目的是为了防止从缓存中返回过期的资源。 客户端发送的请求中如果包含 no-cache 指令，则表示客户端将不会接 收缓存过的响应。于是，“中间”的缓存服务器必须把客户端请求转发 给源服务器。</p>
+<p><strong>Cache-Control: max-age=604800（单位：秒）</strong></p>
+<p>当客户端发送的请求中包含 max-age 指令时，如果判定缓存资源的缓 存时间数值比指定时间的数值更小，那么服务端就直接返回304，客户端会使用自己本地缓存的资源。 另外，当指定 max-age 值为 0，那么服务器就会使用ETag和modefied-time验证，来决定返回304还是200。</p>
+<p>应用 HTTP/1.1 版本的缓存服务器遇到同时存在 Expires 首部字段的情 况时，会优先处理 max-age 指令，而忽略掉 Expires 首部字段。而 HTTP/1.0 版本的缓存服务器的情况却相反，max-age 指令会被忽略。</p>
+<ul>
+<li>Cache-Control作为响应头部</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>public</td>
+<td>无</td>
+<td>可向任意方提供响应的缓存</td>
+</tr>
+<tr>
+<td>private</td>
+<td>可省略</td>
+<td>仅向特定用户返回响应</td>
+</tr>
+<tr>
+<td>no-cache</td>
+<td>可省略</td>
+<td>缓存前必需先确认其有效性</td>
+</tr>
+<tr>
+<td>no-store</td>
+<td>无</td>
+<td>不缓存请求或相应的任何内容</td>
+</tr>
+<tr>
+<td>no-transform</td>
+<td>无</td>
+<td>代理不可更改媒体类型</td>
+</tr>
+<tr>
+<td>must-revalidate</td>
+<td>无</td>
+<td>可缓存但必须再向源服务器进行确认</td>
+</tr>
+<tr>
+<td>proxy-revalidate</td>
+<td>无</td>
+<td>要求中间缓存服务器对缓存的响应有效性再进行确认</td>
+</tr>
+<tr>
+<td>max-age=[秒]</td>
+<td>必需</td>
+<td>响应的最大Age值</td>
+</tr>
+<tr>
+<td>s-maxage=[秒]</td>
+<td>必需</td>
+<td>公共缓存服务器响应的最大Age值</td>
+</tr>
+<tr>
+<td>cache-extension</td>
+<td>-</td>
+<td>新指令标记(token)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cache-Control: public</strong></p>
+<p>当指定使用 public 指令时，则明确表明其他用户也可利用缓存。</p>
+<p><strong>Cache-Control: private</strong></p>
+<p>当指定 private 指令后，响应只以特定的用户作为对象，这与 public 指令的行为相反。 缓存服务器会对该特定用户提供资源缓存的服务，对于其他用户发送 过来的请求，代理服务器则不会返回缓存。</p>
+<p><strong><em>Cache-Control: no-cache</em></strong></p>
+<p>如果服务器返回的响应中包含 no-cache 指令，那么缓存服务器不能对 资源进行缓存。源服务器以后也将不再对缓存服务器请求中提出的资 源有效性进行确认，且禁止其对响应资源进行缓存操作。</p>
+<p><strong>Cache-Control: no-cache=Location</strong></p>
+<p>由服务器返回的响应中，若报文首部字段 Cache-Control 中对 no-cache 字段名具体指定参数值，那么客户端在接收到这个被指定参数值的首 部字段对应的响应报文后，就不能使用缓存。换言之，无参数值的首 部字段可以使用缓存。只能在响应指令中指定该参数。</p>
+<p><strong>Cache-Control: no-store</strong></p>
+<p>当使用 no-store 指令时，暗示请求（和对应的响应）或响应中包含机密信息。</p>
+<blockquote>
+<p>注：从字面意思上很容易把 no-cache 误解成为不缓存，但事实上 no-cache 代表不缓 存过期的资源，缓存会向源服务器进行有效期确认后处理资源，也许称为 do-notserve-from-cache-without-revalidation 更合适。no-store 才是真正地不进行缓存。</p>
+</blockquote>
+<p>因此，该指令规定缓存不能在本地存储请求或响应的任一部分。</p>
+<p><strong>Cache-Control: max-age=604800（单位：秒）</strong></p>
+<p>当客户端发送的请求中包含 max-age 指令时，如果判定缓存资源的缓 存时间数值比指定时间的数值更小，那么客户端就不会发起请求，而是直接使用自己本地缓存的资源。 另外，当指定 max-age 值为 0，那么客户端一定会发起一个请求给服务端，服务端会进行资源的校验，决定返回304还是200。</p>
+<p>应用 HTTP/1.1 版本的缓存服务器遇到同时存在 Expires 首部字段的情 况时，会优先处理 max-age 指令，而忽略掉 Expires 首部字段。而 HTTP/1.0 版本的缓存服务器的情况却相反，max-age 指令会被忽略。</p>
+<p><strong>Cache-Control: s-maxage=604800（单位 ：秒）</strong></p>
+<p>s-maxage 指令的功能和 max-age 指令的相同，它们的不同点是 smaxage 指令只适用于供多位用户使用的公共缓存服务器 ，如CDN缓存。也就是 说，对于向同一用户重复返回响应的服务器来说，这个指令没有任何 作用。</p>
+<p>另外，当使用 s-maxage 指令后，则直接忽略对 Expires 首部字段及 max-age 指令的处理。</p>
+<h4 id="cache-control指令流程图"><a href="#cache-control指令流程图" class="headerlink" title="cache-control指令流程图"></a>cache-control指令流程图</h4><p><img src="https://upload-images.jianshu.io/upload_images/4050018-2da2091e6db1770d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图片51.png"></p>
+<hr>
+<h4 id="请求头部字段"><a href="#请求头部字段" class="headerlink" title="请求头部字段"></a>请求头部字段</h4><table>
+<thead>
+<tr>
+<th>头部名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>If-Match</td>
+<td>比较ETag是否一致，和响应的ETag字段相对应</td>
+</tr>
+<tr>
+<td>If-None-Match</td>
+<td>比较ETag是否不一致，和响应的ETag字段相对应</td>
+</tr>
+<tr>
+<td>If-Modified-Since</td>
+<td>比较资源最后更新时间是否一致，和响应的Last-Modified字段相对应</td>
+</tr>
+<tr>
+<td>If-Unmodified-Since</td>
+<td>比较资源最后更新时间是否不一致，和响应的Last-Modified字段相对应</td>
+</tr>
+</tbody>
+</table>
+<h4 id="响应头部字段"><a href="#响应头部字段" class="headerlink" title="响应头部字段"></a>响应头部字段</h4><table>
+<thead>
+<tr>
+<th>头部名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Etag</td>
+<td>资源匹配信息</td>
+</tr>
+</tbody>
+</table>
+<h4 id="响应实体头部字段"><a href="#响应实体头部字段" class="headerlink" title="响应实体头部字段"></a>响应实体头部字段</h4><table>
+<thead>
+<tr>
+<th>头部名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Expires</td>
+<td>http1.0的缓存过期时间字段</td>
+</tr>
+<tr>
+<td>Last-Modified</td>
+<td>资源最后一次修改时间</td>
+</tr>
+</tbody>
+</table>
+<h3 id="缓存校验字段"><a href="#缓存校验字段" class="headerlink" title="缓存校验字段"></a>缓存校验字段</h3><h4 id="ETag"><a href="#ETag" class="headerlink" title="ETag"></a>ETag</h4><p>首部字段 ETag 能告知客户端实体标识。它是一种可将资源以字符串 形式做唯一性标识的方式。服务器会为每份资源分配对应的 ETag 值。</p>
+<p>另外，当资源更新时，ETag 值也需要更新。生成 ETag 值时，并没有 统一的算法规则，而仅仅是由服务器来分配。</p>
+<p>资源被缓存时，就会被分配唯一性标识。例如，当使用中文版的浏览 器访问 <a href="http://www.google.com/" target="_blank" rel="noopener">http://www.google.com/</a> 时，就会返回中文版对应的资源，而 使用英文版的浏览器访问时，则会返回英文版对应的资源。两者的 URI 是相同的，所以仅凭 URI 指定缓存的资源是相当困难的。若在下 载过程中出现连接中断、再连接的情况，都会依照 ETag 值来指定资 源。</p>
+<p><strong>强 ETag 值和弱 Tag 值</strong></p>
+<p>ETag 中有强 ETag 值和弱 ETag 值之分。</p>
+<p>强 ETag 值，不论实体发生多么细微的变化都会改变其值。</p>
+<blockquote>
+<p>ETag: “usagi-1234”</p>
+</blockquote>
+<p>弱 ETag 值只用于提示资源是否相同。只有资源发生了根本改变，产 生差异时才会改变 ETag 值。这时，会在字段值最开始处附加 W/。</p>
+<blockquote>
+<p>ETag: W/“usagi-1234”</p>
+</blockquote>
+<p><strong>If-Match</strong></p>
+<p>形如 If-xxx 这种样式的请求首部字段，都可称为条件请求。服务器接 收到附带条件的请求后，只有判断指定条件为真时，才会执行请求。</p>
+<p>首部字段 If-Match，属附带条件之一，它会告知服务器匹配资源所用 的实体标记（ETag）值。这时的服务器无法使用弱 ETag 值。（请参 照本章有关首部字段 ETag 的说明） 服务器会比对 If-Match 的字段值和资源的 ETag 值，仅当两者一致 时，才会执行请求。反之，则返回状态码 412 Precondition Failed 的响 应。</p>
+<p>可以理解为客户端校验当前本地缓存是否在服务器端可用。</p>
+<p>还可以使用星号（*）指定 If-Match 的字段值。针对这种情况，服务 器将会忽略 ETag 的值，只要资源存在就处理请求。可以理解为客户端强制请求服务器当前的资源实体。</p>
+<p>这个值默认是上一次该资源响应头部的ETag字段值。</p>
+<p><strong>If-None-Match</strong></p>
+<p>首部字段 If-None-Match 属于附带条件之一。它和首部字段 If-Match 作用相反。用于指定 If-None-Match 字段值的实体标记（ETag）值与 请求资源的 ETag 不一致时，它就告知服务器处理该请求。如果一致，就返回304，表示告知客户端使用自己本地的缓存。</p>
+<p> 在 GET 或 HEAD 方法中使用首部字段 If-None-Match 可获取最新的资 源。因此，这与使用首部字段 If-Modified-Since 时有些类似。</p>
+<p>这个值默认是上一次该资源响应头部的ETag字段值。</p>
+<h4 id="Last-modified"><a href="#Last-modified" class="headerlink" title="Last-modified"></a>Last-modified</h4><blockquote>
+<p>Last-Modified: Wed, 23 May 2012 09:59:55 GMT</p>
+</blockquote>
+<p>首部字段 Last-Modified 指明资源最终修改的时间。一般来说，这个 值就是 Request-URI 指定资源被修改的时间。</p>
+<p><strong>If-Modified-Since</strong></p>
+<blockquote>
+<p>If-Modified-Since: Thu, 15 Apr 2004 00:00:00 GMT</p>
+</blockquote>
+<p>首部字段 If-Modified-Since，属附带条件之一，它会告知服务器若 If-Modified-Since 字段值早于资源的更新时间，则希望能处理该请求。 而在指定 If-Modified-Since 字段值的日期时间之后，如果请求的资源 都没有过更新，则返回状态码 304 Not Modified 的响应。</p>
+<p>这个值默认是上一次该资源响应实体头部的Last-Modified字段值。</p>
+<p><strong>If-Unmodified-Since</strong></p>
+<blockquote>
+<p>If-Unmodified-Since: Thu, 03 Jul 2012 00:00:00 GMT</p>
+</blockquote>
+<p>首部字段 If-Unmodified-Since 和首部字段 If-Modified-Since 的作用相 反。它的作用的是告知服务器，指定的请求资源只有在字段值内指定 的日期时间之后，未发生更新的情况下，才能处理请求。如果在指定 日期时间后发生了更新，则以状态码 412 Precondition Failed 作为响应 返回。</p>
+<p>可以理解为客户端校验当前本地缓存是否在服务器端可用。</p>
+<p>这个值默认是上一次该资源响应实体头部的Last-Modified字段值。</p>
+<h3 id="缓存分类"><a href="#缓存分类" class="headerlink" title="缓存分类"></a>缓存分类</h3><h4 id="强缓存"><a href="#强缓存" class="headerlink" title="强缓存"></a>强缓存</h4><p>强缓存在客户端和服务器端都会存在。</p>
+<p><strong>客户端</strong>：客户端在请求资源前，会检查上一次该资源响应头的Cache-Control字段，如果该字段的值为max-age=time(大于0的毫秒数)，如果该资源缓存的时间没有过这个时间值，则直接使用本地的缓存，而不像服务器发请求。</p>
+<p><strong>服务器端</strong>：服务器端在接收到一个请求后，如果该请求的头部Cache-Control字段的值为max-age=time(大于0的毫秒数)，如果距离上一次返回资源的时间小于这个毫秒数，那么服务器不会读取新的资源，而是直接返回304，告知客户端使用自己本地上次缓存的资源即可。</p>
+<p><strong>注</strong>：这两种情况，其实归根结底最后都是使用的客户端本地的资源，服务器没有返回资源实体。这样的好处是节省请求次数或者请求流量，但缺点是，如果在max-age时间内服务器资源有更新，客户端无法得到最新的服务器资源。此时可以通过Ctrl+F5强制刷新(其实就是设置一个Cache-Control:no-cache的请求头)，获得最新的服务器资源。</p>
+<h4 id="协商缓存（对比缓存）"><a href="#协商缓存（对比缓存）" class="headerlink" title="协商缓存（对比缓存）"></a>协商缓存（对比缓存）</h4><p>对比缓存值存在于服务器端。</p>
+<p>在没有走强缓存逻辑的情况下，服务器端会进行Last-Modified和Etag的校验，如果校验发现资源未更新，则会返回304，否则会返回新的资源实体。</p>
+<h3 id="缓存流程图"><a href="#缓存流程图" class="headerlink" title="缓存流程图"></a>缓存流程图</h3><p><img src="https://upload-images.jianshu.io/upload_images/4050018-76363a70319fe522.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="图片61.png"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/HTTP/" rel="tag"># HTTP</a>
+          
+            <a href="/tags/缓存/" rel="tag"># 缓存</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/21/HTTPS和HTTP2.0详解/" rel="next" title="HTTPS和HTTP2.0详解">
+                <i class="fa fa-chevron-left"></i> HTTPS和HTTP2.0详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/21/字符集和字符编码详解/" rel="prev" title="字符集和字符编码详解">
+                字符集和字符编码详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/22583601?s=400&u=3f2a631260e5d1fc1ccc50a902ee8919290bf17f&v=4"
+                alt="刘君涛" />
+            
+              <p class="site-author-name" itemprop="name">刘君涛</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/liujuntao123/liujuntao123.github.io/tree/master" title="github" target="_blank">github</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#与缓存相关的HTTP头部字段"><span class="nav-number">1.</span> <span class="nav-text">与缓存相关的HTTP头部字段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#http1-0时期的缓存方案"><span class="nav-number">1.1.</span> <span class="nav-text">http1.0时期的缓存方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http1-1的缓存方案"><span class="nav-number">1.2.</span> <span class="nav-text">http1.1的缓存方案</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#通用头部字段，即请求和响应都可以包含"><span class="nav-number">1.2.1.</span> <span class="nav-text">通用头部字段，即请求和响应都可以包含</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cache-control指令流程图"><span class="nav-number">1.2.2.</span> <span class="nav-text">cache-control指令流程图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求头部字段"><span class="nav-number">1.2.3.</span> <span class="nav-text">请求头部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#响应头部字段"><span class="nav-number">1.2.4.</span> <span class="nav-text">响应头部字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#响应实体头部字段"><span class="nav-number">1.2.5.</span> <span class="nav-text">响应实体头部字段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存校验字段"><span class="nav-number">1.3.</span> <span class="nav-text">缓存校验字段</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ETag"><span class="nav-number">1.3.1.</span> <span class="nav-text">ETag</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Last-modified"><span class="nav-number">1.3.2.</span> <span class="nav-text">Last-modified</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存分类"><span class="nav-number">1.4.</span> <span class="nav-text">缓存分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#强缓存"><span class="nav-number">1.4.1.</span> <span class="nav-text">强缓存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#协商缓存（对比缓存）"><span class="nav-number">1.4.2.</span> <span class="nav-text">协商缓存（对比缓存）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存流程图"><span class="nav-number">1.5.</span> <span class="nav-text">缓存流程图</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">刘君涛</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
